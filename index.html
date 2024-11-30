@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Grade Evaluator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      padding: 20px;
+      background-color: #007BFF;
+      color: white;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    .container {
+      margin: 20px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    /* Remove spinner arrows for number inputs */
+    input[type="number"] {
+      -moz-appearance: textfield; /* Firefox */
+      -webkit-appearance: none; /* Safari and Chrome */
+      appearance: none; /* Standard */
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0; /* Remove margin for inner/outer spin buttons */
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Student Grade Evaluator</h1>
+  </header>
+
+  <!-- Form Container -->
+  <div class="container">
+    <h2>Enter Your Grades</h2>
+    <form id="gradeForm">
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" placeholder="Enter your full name" required><br>
+
+      <label for="math">Math:</label>
+      <input type="number" id="math" min="0" max="100" required><br>
+
+      <label for="science">Science:</label>
+      <input type="number" id="science" min="0" max="100" required><br>
+
+      <label for="english">English:</label>
+      <input type="number" id="english" min="0" max="100" required><br>
+
+      <label for="filipino">Filipino:</label>
+      <input type="number" id="filipino" min="0" max="100" required><br>
+
+      <label for="pe">P.E.:</label>
+      <input type="number" id="pe" min="0" max="100" required><br>
+
+      <button type="submit">Evaluate Grades</button>
+    </form>
+
+    <!-- Result Display -->
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("gradeForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form from submitting
+
+      // Get the values of inputs
+      const name = document.getElementById("name").value;
+      const grades = {
+        math: parseInt(document.getElementById("math").value),
+        science: parseInt(document.getElementById("science").value),
+        english: parseInt(document.getElementById("english").value),
+        filipino: parseInt(document.getElementById("filipino").value),
+        pe: parseInt(document.getElementById("pe").value)
+      };
+
+      // Validate grades
+      let isValid = true;
+      for (let subject in grades) {
+        if (grades[subject] < 0 || grades[subject] > 100 || isNaN(grades[subject])) {
+          isValid = false;
+          break;
+        }
+      }
+
+      if (!isValid) {
+        document.getElementById("result").innerHTML = "<span class='error'>Please enter valid grades between 0 and 100.</span>";
+        return;
+      }
+
+      // Grade Evaluation
+      const evaluation = {
+        excellent: 0,
+        poorOrFail: 0,
+        status: ""
+      };
+
+      const evaluateGrade = (grade) => {
+        if (grade >= 90) return "Excellent";
+        if (grade >= 80) return "Good";
+        if (grade >= 70) return "Average";
+        if (grade >= 60) return "Poor";
+        return "Fail";
+      };
+
+      // Count grades
+      for (let subject in grades) {
+        const grade = grades[subject];
+        const result = evaluateGrade(grade);
+        if (result === "Excellent") {
+          evaluation.excellent++;
+        }
+        if (result === "Poor" || result === "Fail") {
+          evaluation.poorOrFail++;
+        }
+      }
+
+      // Determine ranking
+      if (evaluation.excellent === 5) {
+        evaluation.status = "Top Honor Student";
+      } else if (evaluation.excellent >= 3) {
+        evaluation.status = "Second Honorable Student";
+      } else if (evaluation.poorOrFail === 5) {
+        evaluation.status = "Repeater";
+      } else {
+        evaluation.status = "Average Student";
+      }
+
+      // Display result
+      document.getElementById("result").innerHTML = `
+        <h3>Grade Evaluation for ${name}</h3>
+        <p>Math: ${evaluateGrade(grades.math)}</p>
+        <p>Science: ${evaluateGrade(grades.science)}</p>
+        <p>English: ${evaluateGrade(grades.english)}</p>
+        <p>Filipino: ${evaluateGrade(grades.filipino)}</p>
+        <p>P.E.: ${evaluateGrade(grades.pe)}</p>
+        <p><strong>Status: ${evaluation.status}</strong></p>
+      `;
+    });
+  </script>
+
+</body>
+</html>
